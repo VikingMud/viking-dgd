@@ -1,0 +1,7 @@
+comp/node.o
+comp/parser.o
+comp/control.o
+comp/optimize.o
+comp/codegeni.o
+comp/compile.o
+comp/csupport.o

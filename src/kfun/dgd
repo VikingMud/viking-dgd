@@ -1,0 +1,8 @@
+kfun/table.o
+kfun/builtin.o
+kfun/std.o
+kfun/file.o
+kfun/math.o
+kfun/extra.o
+kfun/debug.o
+kfun/viking.o

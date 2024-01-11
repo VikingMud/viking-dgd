@@ -1,0 +1,7 @@
+ed/line.o
+ed/buffer.o
+ed/fileio.o
+ed/regexp.o
+ed/vars.o
+ed/edcmd.o
+ed/cmdsub.o

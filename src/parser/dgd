@@ -1,0 +1,4 @@
+parser/grammar.o
+parser/dfa.o
+parser/srp.o
+parser/parse.o

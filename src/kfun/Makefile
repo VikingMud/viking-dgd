@@ -23,8 +23,8 @@ CFLAGS=	-I. -I.. -I../comp -I../parser $(CCFLAGS)
 LINTFLAGS=-abcehpruz
 CC=	gcc
 
-SRC=	builtin.c std.c file.c math.c extra.c debug.c
-OBJ=	builtin.o std.o file.o math.o extra.o debug.o
+SRC=	builtin.c std.c file.c math.c extra.c debug.c viking.c
+OBJ=	builtin.o std.o file.o math.o extra.o debug.o viking.o
 
 dgd:	table.o $(OBJ)
 	@for i in table.o $(OBJ); do echo kfun/$$i; done > dgd

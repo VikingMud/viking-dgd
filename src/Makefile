@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-HOST=	DARWIN
-DEFINES=-D$(HOST) #-DNETWORK_EXTENSIONS #-DLPC_EXTENSION #-DDUMP_FUNCS
-DEBUG=	-O -g
+HOST=	LINUX
+DEFINES=-D$(HOST) -DNETWORK_EXTENSIONS #-DLPC_EXTENSION #-DDUMP_FUNCS
+DEBUG=	-O0 -g -DVIKING
 CCFLAGS=$(DEFINES) $(DEBUG)
 CFLAGS=	-I. -Icomp -Ilex -Ied -Iparser -Ikfun $(CCFLAGS)
 LDFLAGS=

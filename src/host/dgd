@@ -1,0 +1,9 @@
+host/local.o
+host/random.o
+host/dirent.o
+host/dload.o
+host/time.o
+host/connect.o
+host/crypt.o
+host/xfloat.o
+host/asn.o

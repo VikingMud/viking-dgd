@@ -1224,7 +1224,7 @@ int kf_read_file(frame *f, int nargs)
 	    (l != 0 && P_lseek(fd, l, SEEK_SET) < 0)) {
 	    /* bad seek */
 	    P_close(fd);
-	    return 1;
+	    return 2;
 	}
 	sbuf.st_size -= l;
     }
@@ -1558,7 +1558,7 @@ int kf_get_dir(frame *f)
 	*pat++ = '\0';
     }
 
-    ftable = ALLOCA(fileinfo, ftabsz = FILEINFO_CHUNK);
+    ftable = ALLOC(fileinfo, ftabsz = FILEINFO_CHUNK);
     nfiles = 0;
     if (strpbrk(pat, "?*[\\") == (char *) NULL &&
 	getinfo(file, pat, &ftable[0])) {
@@ -1578,10 +1578,10 @@ int kf_get_dir(frame *f)
 		    if (nfiles == ftabsz) {
 			fileinfo *tmp;
 
-			tmp = ALLOCA(fileinfo, ftabsz + FILEINFO_CHUNK);
+			tmp = ALLOC(fileinfo, ftabsz + FILEINFO_CHUNK);
 			memcpy(tmp, ftable, ftabsz * sizeof(fileinfo));
 			ftabsz += FILEINFO_CHUNK;
-			AFREE(ftable);
+			FREE(ftable);
 			ftable = tmp;
 		    }
 		    ftable[nfiles++] = finf;
@@ -1620,7 +1620,7 @@ int kf_get_dir(frame *f)
 	}
 	ftable -= nfiles;
     }
-    AFREE(ftable);
+    FREE(ftable);
 
     return 0;
 }

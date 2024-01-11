@@ -17,11 +17,19 @@
  */
 
 /* these may be changed, but sizeof(type) <= sizeof(int) */
+#ifdef VIKING
+typedef Uint uindex;
+# define UINDEX_MAX     UINT_MAX
+
+typedef Uint sector;
+# define SW_UNUSED	UINT_MAX
+#else
 typedef unsigned short uindex;
 # define UINDEX_MAX	USHRT_MAX
 
 typedef uindex sector;
 # define SW_UNUSED	UINDEX_MAX
+#endif
 
 /* sizeof(ssizet) <= sizeof(uindex) */
 typedef unsigned short ssizet;

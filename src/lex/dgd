@@ -1,0 +1,5 @@
+lex/macro.o
+lex/ppstr.o
+lex/token.o
+lex/special.o
+lex/ppcontrol.o

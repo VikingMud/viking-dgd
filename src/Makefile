@@ -1,4 +1,4 @@
-#
+
 # This file is part of DGD, https://github.com/dworkin/dgd
 # Copyright (C) 1993-2010 Dworkin B.V.
 # Copyright (C) 2010-2018 DGD Authors (see the commit log for details)
@@ -40,7 +40,7 @@ ifndef HOST
 endif
 
 DEFINES=-D$(HOST)	# -DSLASHSLASH -DNETWORK_EXTENSIONS -DNOFLOAT -DCLOSURES -DCO_THROTTLE=50
-DEBUG=	-O -g
+DEBUG=	-O -g -DVIKING
 CCFLAGS=$(DEFINES) $(DEBUG)
 CXXFLAGS=-I. -Icomp -Ilex -Ied -Iparser -Ikfun $(CCFLAGS)
 LDFLAGS=

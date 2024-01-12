@@ -30,6 +30,7 @@
 # include "file.cpp"
 # include "math.cpp"
 # include "extra.cpp"
+# include "viking.cpp"
 # undef FUNCDEF
 
 /*
@@ -42,6 +43,7 @@ static kfunc kforig[] = {
 # include "file.cpp"
 # include "math.cpp"
 # include "extra.cpp"
+# include "viking.cpp"
 # undef FUNCDEF
 };
 

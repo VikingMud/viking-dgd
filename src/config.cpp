@@ -1365,6 +1365,9 @@ bool Config::includes()
     puts("# define INT_MIN\t\t0x80000000\t/* -2147483648 */\012");
     puts("# define INT_MAX\t\t2147483647\t/* max integer value */\012");
 # endif
+    sprintf(buffer, "# define MAX_STRING_SIZE\t%u\t\t/* max string size (obsolete) */\012", MAX_STRLEN);
+    puts(buffer);
+
     if (!close()) {
 	return FALSE;
     }

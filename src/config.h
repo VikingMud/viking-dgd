@@ -28,25 +28,35 @@
  *
  * default: 64K objects, 64K swap sectors, 255 users, max string length 64K
  */
+
 # ifndef UINDEX_TYPE
-# define UINDEX_TYPE	unsigned short
-# define UINDEX_MAX	USHRT_MAX
+# ifdef LARGENUM
+// Define UINDEX_TYPE as a 32-bit or 64-bit unsigned integer for LARGENUM
+# define UINDEX_TYPE    uint32_t
+# define UINDEX_MAX     UINT32_MAX
+# else
+// Keep the original definition for non-LARGENUM
+# define UINDEX_TYPE    unsigned short
+# define UINDEX_MAX     USHRT_MAX
 # endif
+# endif
+
 # ifndef SECTOR_TYPE
-# define SECTOR_TYPE	UINDEX_TYPE
-# define SECTOR_MAX	UINDEX_MAX
+# define SECTOR_TYPE    UINDEX_TYPE
+# define SECTOR_MAX     UINDEX_MAX
 # endif
 # ifndef CINDEX_TYPE
 # define CINDEX_TYPE	UINDEX_TYPE
 # define CINDEX_MAX	UINDEX_MAX
 # endif
 # ifndef EINDEX_TYPE
-# define EINDEX_TYPE	unsigned char
-# define EINDEX_MAX	UCHAR_MAX
+# define EINDEX_TYPE    unsigned char
+# define EINDEX_MAX     UCHAR_MAX
 # endif
+
 # ifndef SSIZET_TYPE
-# define SSIZET_TYPE	unsigned short
-# define SSIZET_MAX	USHRT_MAX
+# define SSIZET_TYPE    unsigned short
+# define SSIZET_MAX     USHRT_MAX
 # endif
 
 typedef UINDEX_TYPE uindex;

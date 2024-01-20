@@ -33,8 +33,6 @@
 # include "comm.h"
 # include "ext.h"
 # include "version.h"
-# include "macro.h"
-# include "token.h"
 # include "ppcontrol.h"
 # include "node.h"
 # include "parser.h"
@@ -829,7 +827,7 @@ static int ntports, nbports, ndports;
  */
 void Config::err(const char *err)
 {
-    EC->message("Config error, line %u: %s\012", TokenBuf::line(), err);/* LF */
+    EC->message("Config error, line %u: %s\012", PP->line(), err);	/* LF */
 }
 
 /*
@@ -850,7 +848,7 @@ bool Config::config()
     memset(dirs, '\0', sizeof(dirs));
     strs = (char **) NULL;
 
-    while ((c=PP::gettok()) != EOF) {
+    while ((c=PP->gettok()) != EOF) {
 	if (c != IDENTIFIER) {
 	    err("option expected");
 	    return FALSE;
@@ -875,12 +873,12 @@ bool Config::config()
 	    }
 	}
 
-	if (PP::gettok() != '=') {
+	if (PP->gettok() != '=') {
 	    err("'=' expected");
 	    return FALSE;
 	}
 
-	if ((c=PP::gettok()) != conf[m].type) {
+	if ((c=PP->gettok()) != conf[m].type) {
 	    if (c != INT_CONST && c != STRING_CONST && c != '(') {
 		err("syntax error");
 		return FALSE;
@@ -939,7 +937,7 @@ bool Config::config()
 	    break;
 
 	case '(':
-	    if (PP::gettok() != '{') {
+	    if (PP->gettok() != '{') {
 		err("'{' expected");
 		return FALSE;
 	    }
@@ -949,7 +947,7 @@ bool Config::config()
 	    case INCLUDE_DIRS:	strs = dirs; break;
 	    }
 	    for (;;) {
-		if (PP::gettok() != STRING_CONST) {
+		if (PP->gettok() != STRING_CONST) {
 		    err("string expected");
 		    return FALSE;
 		}
@@ -961,7 +959,7 @@ bool Config::config()
 		strs[l] = strcpy(ALLOC(char, strlen(yytext) + 1), yytext);
 		l++;
 		MM->dynamicMode();
-		if ((c=PP::gettok()) == '}') {
+		if ((c=PP->gettok()) == '}') {
 		    break;
 		}
 		if (c != ',') {
@@ -969,7 +967,7 @@ bool Config::config()
 		    return FALSE;
 		}
 	    }
-	    if (PP::gettok() != ')') {
+	    if (PP->gettok() != ')') {
 		err("')' expected");
 		return FALSE;
 	    }
@@ -977,12 +975,12 @@ bool Config::config()
 	    break;
 
 	case '[':
-	    if (PP::gettok() != '[') {
+	    if (PP->gettok() != '[') {
 		err("'[' expected");
 		return FALSE;
 	    }
 	    l = 0;
-	    if ((c=PP::gettok()) != ']') {
+	    if ((c=PP->gettok()) != ']') {
 		switch (m) {
 		case BINARY_PORT:
 		    strs = bhosts;
@@ -1016,11 +1014,11 @@ bool Config::config()
 					 yytext);
 			MM->dynamicMode();
 		    }
-		    if (PP::gettok() != ':') {
+		    if (PP->gettok() != ':') {
 			err("':' expected");
 			return FALSE;
 		    }
-		    if (PP::gettok() != INT_CONST) {
+		    if (PP->gettok() != INT_CONST) {
 			err("integer expected");
 			return FALSE;
 		    }
@@ -1029,17 +1027,17 @@ bool Config::config()
 			return FALSE;
 		    }
 		    ports[l++] = yylval.number;
-		    if ((c=PP::gettok()) == ']') {
+		    if ((c=PP->gettok()) == ']') {
 			break;
 		    }
 		    if (c != ',') {
 			err("',' expected");
 			return FALSE;
 		    }
-		    c = PP::gettok();
+		    c = PP->gettok();
 		}
 	    }
-	    if (PP::gettok() != ')') {
+	    if (PP->gettok() != ')') {
 		err("')' expected");
 		return FALSE;
 	    }
@@ -1059,12 +1057,12 @@ bool Config::config()
 	    break;
 
 	case ']':
-	    if (PP::gettok() != '[') {
+	    if (PP->gettok() != '[') {
 		err("'[' expected");
 		return FALSE;
 	    }
 	    l = 0;
-	    if ((c=PP::gettok()) != ']') {
+	    if ((c=PP->gettok()) != ']') {
 		for (;;) {
 		    if (l == MAX_STRINGS - 1) {
 			err("mapping too large");
@@ -1078,11 +1076,11 @@ bool Config::config()
 		    modules[l] = strcpy(ALLOC(char, strlen(yytext) + 1),
 					yytext);
 		    MM->dynamicMode();
-		    if (PP::gettok() != ':') {
+		    if (PP->gettok() != ':') {
 			err("':' expected");
 			return FALSE;
 		    }
-		    if (PP::gettok() != STRING_CONST) {
+		    if (PP->gettok() != STRING_CONST) {
 			err("string expected");
 			return FALSE;
 		    }
@@ -1090,17 +1088,17 @@ bool Config::config()
 		    modconf[l++] = strcpy(ALLOC(char, strlen(yytext) + 1),
 					  yytext);
 		    MM->dynamicMode();
-		    if ((c=PP::gettok()) == ']') {
+		    if ((c=PP->gettok()) == ']') {
 			break;
 		    }
 		    if (c != ',') {
 			err("',' expected");
 			return FALSE;
 		    }
-		    c = PP::gettok();
+		    c = PP->gettok();
 		}
 	    }
-	    if (PP::gettok() != ')') {
+	    if (PP->gettok() != ')') {
 		err("')' expected");
 		return FALSE;
 	    }
@@ -1108,7 +1106,7 @@ bool Config::config()
 	    break;
 	}
 	conf[m].set = TRUE;
-	if (PP::gettok() != ';') {
+	if (PP->gettok() != ';') {
 	    err("';' expected");
 	    return FALSE;
 	}
@@ -1119,7 +1117,8 @@ bool Config::config()
 	    l != DATAGRAM_PORT && l != DATAGRAM_USERS) {
 	    char buffer[64];
 
-	    sprintf(buffer, "unspecified option %s", conf[l].name);
+	    snprintf(buffer, sizeof(buffer), "unspecified option %s",
+		     conf[l].name);
 	    err(buffer);
 	    return FALSE;
 	}
@@ -1252,7 +1251,7 @@ bool Config::includes()
 
     /* create status.h file */
     obuf = buf;
-    sprintf(buffer, "%s/status.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/status.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1294,7 +1293,7 @@ bool Config::includes()
     puts("# define O_CALLOUTS\t4\t/* callouts in object */\012");
     puts("# define O_INDEX\t5\t/* unique ID for master object */\012");
     puts("# define O_UNDEFINED\t6\t/* undefined functions */\012");
-    puts("# define O_SPECIAL\t6\t/* object has special role */\012");
+    puts("# define O_SPECIAL\t7\t/* object has special role */\012");
 
     puts("\012# define CO_HANDLE\t0\t/* callout handle */\012");
     puts("# define CO_FUNCTION\t1\t/* function name */\012");
@@ -1305,33 +1304,33 @@ bool Config::includes()
     }
 
     /* create type.h file */
-    sprintf(buffer, "%s/type.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/type.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
     puts("/*\012 * This file gives definitions for the value returned ");
     puts("by the\012 * typeof() kfun.  It is automatically generated ");
     puts("by DGD on startup.\012 */\012\012");
-    sprintf(buffer, "# define T_NIL\t\t%d\012", T_NIL);
+    snprintf(buffer, sizeof(buffer), "# define T_NIL\t\t%d\012", T_NIL);
     puts(buffer);
-    sprintf(buffer, "# define T_INT\t\t%d\012", T_INT);
+    snprintf(buffer, sizeof(buffer), "# define T_INT\t\t%d\012", T_INT);
     puts(buffer);
-    sprintf(buffer, "# define T_FLOAT\t%d\012", T_FLOAT);
+    snprintf(buffer, sizeof(buffer), "# define T_FLOAT\t%d\012", T_FLOAT);
     puts(buffer);
-    sprintf(buffer, "# define T_STRING\t%d\012", T_STRING);
+    snprintf(buffer, sizeof(buffer), "# define T_STRING\t%d\012", T_STRING);
     puts(buffer);
-    sprintf(buffer, "# define T_OBJECT\t%d\012", T_OBJECT);
+    snprintf(buffer, sizeof(buffer), "# define T_OBJECT\t%d\012", T_OBJECT);
     puts(buffer);
-    sprintf(buffer, "# define T_ARRAY\t%d\012", T_ARRAY);
+    snprintf(buffer, sizeof(buffer), "# define T_ARRAY\t%d\012", T_ARRAY);
     puts(buffer);
-    sprintf(buffer, "# define T_MAPPING\t%d\012", T_MAPPING);
+    snprintf(buffer, sizeof(buffer), "# define T_MAPPING\t%d\012", T_MAPPING);
     puts(buffer);
     if (!close()) {
 	return FALSE;
     }
 
     /* create connect.h file */
-    sprintf(buffer, "%s/connect.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/connect.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1348,7 +1347,7 @@ bool Config::includes()
     }
 
     /* create limits.h file */
-    sprintf(buffer, "%s/limits.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/limits.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1373,7 +1372,7 @@ bool Config::includes()
     }
 
     /* create float.h file */
-    sprintf(buffer, "%s/float.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/float.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1405,7 +1404,7 @@ bool Config::includes()
     }
 
     /* create trace.h file */
-    sprintf(buffer, "%s/trace.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/trace.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1423,7 +1422,7 @@ bool Config::includes()
     }
 
     /* create kfun.h file */
-    sprintf(buffer, "%s/kfun.h", dirs[0]);
+    snprintf(buffer, sizeof(buffer), "%s/kfun.h", dirs[0]);
     if (!open(buffer)) {
 	return FALSE;
     }
@@ -1432,8 +1431,8 @@ bool Config::includes()
     puts("startup.\012 */\012\012");
     for (i = KF_BUILTINS; i < nkfun; i++) {
 	if (!isdigit(kftab[i].name[0])) {
-	    sprintf(buffer, "# define kf_%s\t\t%d\012", kftab[i].name,
-		    kftab[i].version);
+	    snprintf(buffer, sizeof(buffer), "# define kf_%s\t\t%d\012",
+		     kftab[i].name, kftab[i].version);
 	    for (p = buffer + 9; *p != '\0'; p++) {
 		if (*p == '.') {
 		    *p = '_';
@@ -1447,7 +1446,7 @@ bool Config::includes()
     puts("\012\012/*\012 * Supported ciphers and hashing algorithms.\012 */");
     puts("\012\012# define ENCRYPT_CIPHERS\t");
     for (i = 0; ; ) {
-	sprintf(buffer, "\"%s\"", kfenc[i].name);
+	snprintf(buffer, sizeof(buffer), "\"%s\"", kfenc[i].name);
 	puts(buffer);
 	if (++i == ne) {
 	    break;
@@ -1456,7 +1455,7 @@ bool Config::includes()
     }
     puts("\012# define DECRYPT_CIPHERS\t");
     for (i = 0; ; ) {
-	sprintf(buffer, "\"%s\"", kfdec[i].name);
+	snprintf(buffer, sizeof(buffer), "\"%s\"", kfdec[i].name);
 	puts(buffer);
 	if (++i == nd) {
 	    break;
@@ -1465,7 +1464,7 @@ bool Config::includes()
     }
     puts("\012# define HASH_ALGORITHMS\t");
     for (i = 0; ; ) {
-	sprintf(buffer, "\"%s\"", kfhsh[i].name);
+	snprintf(buffer, sizeof(buffer), "\"%s\"", kfhsh[i].name);
 	puts(buffer);
 	if (++i == nh) {
 	    break;
@@ -1494,14 +1493,14 @@ bool Config::init(char *configfile, char *snapshot, char *snapshot2,
     /*
      * process config file
      */
-    if (!PP::init(path_native(buf, configfile), (char **) NULL,
+    if (!PP->init(path_native(buf, configfile), (char **) NULL,
 		  (String **) NULL, 0, 0)) {
 	EC->message("Config error: cannot open config file\012");	/* LF */
 	MM->finish();
 	return FALSE;
     }
     init = config();
-    PP::clear();
+    PP->clear();
     MM->purge();
     if (!init) {
 	MM->finish();

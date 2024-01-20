@@ -1,7 +1,7 @@
 /*
  * This file is part of DGD, https://github.com/dworkin/dgd
  * Copyright (C) 1993-2010 Dworkin B.V.
- * Copyright (C) 2010-2022 DGD Authors (see the commit log for details)
+ * Copyright (C) 2010-2023 DGD Authors (see the commit log for details)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -34,15 +34,14 @@
 # include "control.h"
 # include "data.h"
 # include "interpret.h"
-# include "macro.h"
-# include "token.h"
 # include "ppcontrol.h"
 # include "table.h"
 # include "node.h"
 # include "compile.h"
 
-# define yylex		PP::gettok
+# define yylex		PP->gettok
 # define yyerror	Compile::error
+# define register	/* nothing */
 
 int nerrors;			/* number of errors encountered so far */
 static int ndeclarations;	/* number of declarations */
@@ -86,7 +85,7 @@ private:
 
 
 /*
- * Keywords. The order is determined in PP::tokenz() in the lexical scanner.
+ * Keywords. The order is determined in PP->tokenz() in the lexical scanner.
  */
 %token NOMASK BREAK DO MAPPING ELSE CASE OBJECT DEFAULT FLOAT CONTINUE STATIC
        INT FOR IF OPERATOR INHERIT RLIMITS GOTO FUNCTION RETURN MIXED WHILE
@@ -1229,7 +1228,7 @@ Node *YYParser::cast(Node *n, Node *type)
 	    switch (n->type) {
 	    case N_INT:
 		/* cast int constant to string */
-		sprintf(buffer, "%ld", (long) n->l.number);
+		snprintf(buffer, sizeof(buffer), "%ld", (long) n->l.number);
 		return Node::createStr(String::create(buffer, strlen(buffer)));
 
 	    case N_FLOAT:

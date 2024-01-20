@@ -1,7 +1,7 @@
 /*
  * This file is part of DGD, https://github.com/dworkin/dgd
  * Copyright (C) 1993-2010 Dworkin B.V.
- * Copyright (C) 2010-2022 DGD Authors (see the commit log for details)
+ * Copyright (C) 2010-2023 DGD Authors (see the commit log for details)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -457,7 +457,7 @@ int RgxNode::token(String *str, ssizet *strlen, char *buffer,
 }
 
 
-class Rule : public Hashtab::Entry, public ChunkAllocated {
+class Rule : public Hash::Entry, public ChunkAllocated {
 public:
     static Rule *create(class RlChunk **c, int type);
 
@@ -736,7 +736,7 @@ String *Grammar::create(Rule *rgxlist, Rule *strlist, Rule *estrlist,
 String *Grammar::parse(String *gram)
 {
     char buffer[STRINGSZ];
-    Hashtab *ruletab, *strtab;
+    Hash::Hashtab *ruletab, *strtab;
     RsChunk *rschunks;
     RlChunk *rlchunks;
     Rule *rgxlist, *strlist, *estrlist, *prodlist, *tmplist, *rr, *rrl;
@@ -756,8 +756,8 @@ String *Grammar::parse(String *gram)
 # endif
 
     /* initialize */
-    ruletab = Hashtab::create(PARSERULTABSZ, PARSERULHASHSZ, FALSE);
-    strtab = Hashtab::create(PARSERULTABSZ, PARSERULHASHSZ, FALSE);
+    ruletab = HM->create(PARSERULTABSZ, PARSERULHASHSZ, FALSE);
+    strtab = HM->create(PARSERULTABSZ, PARSERULHASHSZ, FALSE);
     rschunks = (RsChunk *) NULL;
     rlchunks = (RlChunk *) NULL;
     rgxlist = strlist = estrlist = prodlist = tmplist = (Rule *) NULL;
@@ -800,9 +800,9 @@ String *Grammar::parse(String *gram)
 		    *((*r)->last) = rl;
 		    (*r)->last = &rl->alt;
 		} else {
-		    sprintf(buffer,
-			    "Rule %d previously defined as production rule",
-			    ruleno);
+		    snprintf(buffer, sizeof(buffer),
+			     "Rule %d previously defined as production rule",
+			     ruleno);
 		    goto err;
 		}
 	    } else {
@@ -830,19 +830,20 @@ String *Grammar::parse(String *gram)
 		break;
 
 	    case TOK_BADREGEXP:
-		sprintf(buffer, "Rule %d: malformed regular expression",
-			ruleno);
+		snprintf(buffer, sizeof(buffer),
+			 "Rule %d: malformed regular expression", ruleno);
 		goto err;
 
 	    case TOK_TOOBIGRGX:
-		sprintf(buffer, "Rule %d: regular expression too large",
-			ruleno);
+		snprintf(buffer, sizeof(buffer),
+			 "Rule %d: regular expression too large", ruleno);
 		goto err;
 
 	    case TOK_SYMBOL:
 		if (buflen == 7 && strcmp(buffer, "nomatch") == 0) {
 		    if (nomatch) {
-			sprintf(buffer, "Rule %d: extra nomatch rule", ruleno);
+			snprintf(buffer, sizeof(buffer),
+				 "Rule %d: extra nomatch rule", ruleno);
 			goto err;
 		    }
 		    nomatch = TRUE;
@@ -851,7 +852,8 @@ String *Grammar::parse(String *gram)
 		}
 		/* fall through */
 	    default:
-		sprintf(buffer, "Rule %d: regular expression expected", ruleno);
+		snprintf(buffer, sizeof(buffer),
+			 "Rule %d: regular expression expected", ruleno);
 		goto err;
 	    }
 
@@ -890,8 +892,9 @@ String *Grammar::parse(String *gram)
 		    *((*r)->last) = rl;
 		    (*r)->last = &rl->alt;
 		} else {
-		    sprintf(buffer, "Rule %d previously defined as token rule",
-			    ruleno);
+		    snprintf(buffer, sizeof(buffer),
+			     "Rule %d previously defined as token rule",
+			     ruleno);
 		    goto err;
 		}
 	    } else {
@@ -992,8 +995,8 @@ String *Grammar::parse(String *gram)
 		     */
 		    if (RgxNode::token(gram, &glen, buffer, &buflen) !=
 								TOK_SYMBOL) {
-			sprintf(buffer, "Rule %d: function name expected",
-				ruleno);
+			snprintf(buffer, sizeof(buffer),
+				 "Rule %d: function name expected", ruleno);
 			goto err;
 		    }
 		    rrl->func = String::create(buffer, buflen);
@@ -1009,7 +1012,7 @@ String *Grammar::parse(String *gram)
 	    }
 
 	    if (len > 255) {
-		sprintf(buffer, "Rule %d is too long", ruleno);
+		snprintf(buffer, sizeof(buffer), "Rule %d is too long", ruleno);
 		goto err;
 	    }
 	    rr->num++;
@@ -1022,7 +1025,8 @@ String *Grammar::parse(String *gram)
 	     * end of grammar
 	     */
 	    if (tmplist != (Rule *) NULL) {
-		sprintf(buffer, "Undefined symbol %s", tmplist->symb->text);
+		snprintf(buffer, sizeof(buffer), "Undefined symbol %s",
+			 tmplist->symb->text);
 		goto err;
 	    }
 	    if (rgxlist == (Rule *) NULL) {
@@ -1046,31 +1050,37 @@ String *Grammar::parse(String *gram)
 	    return gram;
 
 	case TOK_ERROR:
-	    sprintf(buffer, "Rule %d: bad token", ruleno);
+	    snprintf(buffer, sizeof(buffer), "Rule %d: bad token", ruleno);
 	    goto err;
 
 	case TOK_BADREGEXP:
-	    sprintf(buffer, "Rule %d: malformed regular expression", ruleno);
+	    snprintf(buffer, sizeof(buffer),
+		     "Rule %d: malformed regular expression", ruleno);
 	    goto err;
 
 	case TOK_TOOBIGRGX:
-	    sprintf(buffer, "Rule %d: regular expression too large", ruleno);
+	    snprintf(buffer, sizeof(buffer),
+		     "Rule %d: regular expression too large", ruleno);
 	    goto err;
 
 	case TOK_BADSTRING:
-	    sprintf(buffer, "Rule %d: malformed string constant", ruleno);
+	    snprintf(buffer, sizeof(buffer),
+		     "Rule %d: malformed string constant", ruleno);
 	    goto err;
 
 	case TOK_TOOBIGSTR:
-	    sprintf(buffer, "Rule %d: string too long", ruleno);
+	    snprintf(buffer, sizeof(buffer), "Rule %d: string too long",
+		     ruleno);
 	    goto err;
 
 	case TOK_TOOBIGSYM:
-	    sprintf(buffer, "Rule %d: symbol too long", ruleno);
+	    snprintf(buffer, sizeof(buffer), "Rule %d: symbol too long",
+		     ruleno);
 	    goto err;
 
 	default:
-	    sprintf(buffer, "Rule %d: unexpected token", ruleno);
+	    snprintf(buffer, sizeof(buffer), "Rule %d: unexpected token",
+		     ruleno);
 	    goto err;
 	}
     }

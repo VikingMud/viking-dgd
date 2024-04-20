@@ -1,3 +1,11 @@
+# VikingMud's Modified DGD Driver
+
+This repository, `viking-dgd`, contains the modified DGD (Dworkin's Game Driver) driver for VikingMud. It is a work in progress to update our driver to a more modern version of DGD, tailored specifically for VikingMud's requirements and features.
+
+Please note that this is not the official DGD repository. For the official DGD source code and documentation, please visit the [DGD source repository](https://github.com/dworkin/dgd) and [DGD's home page](https://www.dworkin.nl/dgd).
+
+# Original Readme
+
 # DGD
 
 This file was written for release 1.7 of DGD, Dworkin's Game Driver.

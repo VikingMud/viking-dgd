@@ -18,8 +18,8 @@
 #
 CXXFLAGS=-I. -I.. -I../comp -I../parser $(CCFLAGS)
 
-SRC=	builtin.cpp std.cpp file.cpp math.cpp extra.cpp
-OBJ=	builtin.o std.o file.o math.o extra.o
+SRC=	builtin.cpp std.cpp file.cpp math.cpp extra.cpp viking.c
+OBJ=	builtin.o std.o file.o math.o extra.o viking.o
 
 all:
 	@echo Please run make from the src directory.

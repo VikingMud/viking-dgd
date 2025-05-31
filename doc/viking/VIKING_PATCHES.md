@@ -4,12 +4,11 @@ This document describes the patches and modifications made to the official DGD d
 
 ## Overview
 
-The Viking DGD fork includes several custom modifications that enhance the driver for VikingMud's specific needs. The main areas of modification are:
+The Viking DGD fork includes several custom modifications or configurations for VikingMud's specific needs. The main areas of modification are:
 
 1. **VIKING Define** - Enables Viking-specific kernel functions
 2. **SLASHSLASH Define** - Enables C++ style // comments in LPC code
 3. **LARGENUM Define** - Enables support for larger numeric types (64-bit integers)
-4. **Build System** - Modifications to support macOS compilation
 
 ## Detailed Patch Descriptions
 
@@ -72,27 +71,6 @@ When LARGENUM is defined:
 
 **Note**: The LARGENUM implementation in config.h indicates this is specifically for object indexing. The full LARGENUM support throughout the codebase (in files like data.cpp, interpret.cpp, etc.) is part of the upstream DGD code and not a Viking-specific modification.
 
-### 4. Darwin/macOS Build Support
-
-**Purpose**: Fixes C++11 compatibility issues on macOS where the default Apple Clang compiler uses C++98.
-
-**Files Modified**:
-- `src/Makefile` - Adds conditional C++11 flag for Darwin
-
-**Implementation**:
-```makefile
-ifeq ($(HOST),DARWIN)
-  CXX+=-std=c++11
-endif
-```
-
-This ensures that on macOS (Darwin), the compiler uses C++11 standard, which is required for aggregate initialization syntax used in the upstream DGD code (e.g., `summand = { 0, 0 };` in data.cpp).
-
-### 5. Documentation Updates
-
-**Files Modified**:
-- `README.md` - Updated to indicate this is VikingMud's modified DGD driver
-
 ## Summary of Changes
 
 | Define | Purpose | Impact |
@@ -100,16 +78,6 @@ This ensures that on macOS (Darwin), the compiler uses C++11 standard, which is 
 | VIKING | Viking-specific kernel functions | Adds rusage() for resource monitoring |
 | SLASHSLASH | C++ style comments | Allows // comments in LPC code |
 | LARGENUM | 64-bit integer support | Larger object counts and numeric range |
-| -std=c++11 | macOS compatibility | Fixes build issues on Darwin |
-
-## Total Changed Files
-
-According to git statistics:
-- 7 files changed
-- 90 insertions
-- 12 deletions
-
-The changes are minimal and focused, making it easier to maintain compatibility with upstream DGD while providing VikingMud-specific functionality.
 
 ## Maintenance Notes
 
@@ -117,4 +85,3 @@ When pulling updates from upstream DGD:
 1. Most conflicts will likely occur in `src/Makefile` due to the DEFINES changes
 2. The viking.cpp file is completely separate and shouldn't conflict
 3. The config.h LARGENUM modification may need attention if upstream changes the UINDEX_TYPE definitions
-4. The Darwin C++11 flag should be preserved unless upstream adds their own C++11 support
